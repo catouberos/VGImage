@@ -1,146 +1,208 @@
-
 import { readFileSync } from 'fs';
 import marked from 'marked';
-import { sanitizeHtml } from './sanitizer';
 import { ParsedRequest } from './types';
-const twemoji = require('twemoji');
-const twOptions = { folder: 'svg', ext: '.svg' };
-const emojify = (text: string) => twemoji.parse(text, twOptions);
 
 const rglr = readFileSync(`${__dirname}/../_fonts/Inter-Regular.woff2`).toString('base64');
 const bold = readFileSync(`${__dirname}/../_fonts/Inter-Bold.woff2`).toString('base64');
-const mono = readFileSync(`${__dirname}/../_fonts/Vera-Mono.woff2`).toString('base64');
+const barlow = readFileSync(`${__dirname}/../_fonts/Barlow-Bold.woff2`).toString('base64');
+const barlowbold = readFileSync(`${__dirname}/../_fonts/Barlow-Black.woff2`).toString('base64');
 
-function getCss(theme: string, fontSize: string) {
-    let background = 'white';
-    let foreground = 'black';
-    let radial = 'lightgray';
-
-    if (theme === 'dark') {
-        background = 'black';
-        foreground = 'white';
-        radial = 'dimgray';
-    }
-    return `
+export function getHtml(parsedReq: ParsedRequest) {
+    const { text, subText, category, summary, score, image } = parsedReq;
+    return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <title>Generated Image</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
     @font-face {
         font-family: 'Inter';
         font-style:  normal;
         font-weight: normal;
         src: url(data:font/woff2;charset=utf-8;base64,${rglr}) format('woff2');
     }
-
     @font-face {
         font-family: 'Inter';
         font-style:  normal;
         font-weight: bold;
         src: url(data:font/woff2;charset=utf-8;base64,${bold}) format('woff2');
     }
-
     @font-face {
-        font-family: 'Vera';
+        font-family: 'Barlow';
         font-style: normal;
-        font-weight: normal;
-        src: url(data:font/woff2;charset=utf-8;base64,${mono})  format("woff2");
+        font-weight: 700;
+        src: url(data:font/woff2;charset=utf-8;base64,${barlow})  format("woff2");
       }
+      @font-face {
+          font-family: 'Barlow';
+          font-style: normal;
+          font-weight: 900;
+          src: url(data:font/woff2;charset=utf-8;base64,${barlowbold})  format("woff2");
+        }
+
+    html {
+        font-size: 32px;
+        font-family: 'Barlow', sans-serif;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:rgb(37, 99, 235);
+        height: 100vh;
+        width: 100vw;
+    }
 
     body {
-        background: ${background};
-        background-image: radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%);
-        background-size: 100px 100px;
-        height: 100vh;
-        display: flex;
-        text-align: center;
-        align-items: center;
-        justify-content: center;
+        position: relative;
+        width: 1000px;
+        height: 1000px;
     }
 
-    code {
-        color: #D400FF;
-        font-family: 'Vera';
-        white-space: pre-wrap;
-        letter-spacing: -5px;
+    .overlay {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.2), transparent 70%);
     }
 
-    code:before, code:after {
-        content: '\`';
+    .featured {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
-    .logo-wrapper {
-        display: flex;
-        align-items: center;
-        align-content: center;
-        justify-content: center;
-        justify-items: center;
+    .text {
+        z-index: 999;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        max-width: 100%;
+        padding: 1rem 1.5rem;
+    }
+
+    .header {
+        position: absolute;
+        top: 1.5rem;
+        left: 1.5rem;
+        z-index: 999;
     }
 
     .logo {
-        margin: 0 75px;
+        display: flex;
+        align-items: center;
+        justify-items: center;
+        background: white;
+        border-radius: 999px;
+        width: 3rem;
+        height: 3rem;
     }
 
-    .plus {
-        color: #BBB;
-        font-family: Times New Roman, Verdana;
-        font-size: 100px;
+    .cate {
+        font-family: 'Inter', sans-serif;
+        color: white;
+        font-size: 0.8rem;
+        letter-spacing: 0.25rem;
     }
 
-    .spacer {
-        margin: 150px;
+    .vg {
+        height: 1.4rem;
+        margin: auto;
     }
 
-    .emoji {
-        height: 1em;
-        width: 1em;
-        margin: 0 .05em 0 .1em;
-        vertical-align: -0.1em;
+    h2 {
+        margin: unset;
+        margin-top: .5rem;
+        color: white;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    h3 {
+        margin: unset;
+        color: white;
+        font-size: 1.2rem;
+        margin-top: .2rem;
+    }
+
+    .score {
+        flex-shrink: 0;
+        margin-left: 1rem;
+        width: 20vw;
+        height: 20vw;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(to right top, rgb(37, 99, 235), rgb(147, 197, 253));
+        border-radius: 999px;
+    }
+
+    .score_number {
+        font-weight: 900;
+        font-size: 3.4rem;
+        color: white;
+    }
+
+    .container {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .summary {
+        color: white;
+        font-family: 'Inter', sans-serif;
     }
     
-    .heading {
-        font-family: 'Inter', sans-serif;
-        font-size: ${sanitizeHtml(fontSize)};
-        font-style: normal;
-        color: ${foreground};
-        line-height: 1.8;
-    }`;
-}
-
-export function getHtml(parsedReq: ParsedRequest) {
-    const { text, theme, md, fontSize, images, widths, heights } = parsedReq;
-    return `<!DOCTYPE html>
-<html>
-    <meta charset="utf-8">
-    <title>Generated Image</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-        ${getCss(theme, fontSize)}
+    .summary p {
+        line-height: 1.5;
+        margin: unset;
+    }
     </style>
-    <body>
-        <div>
-            <div class="spacer">
-            <div class="logo-wrapper">
-                ${images.map((img, i) =>
-                    getPlusSign(i) + getImage(img, widths[i], heights[i])
-                ).join('')}
-            </div>
-            <div class="spacer">
-            <div class="heading">${emojify(
-                md ? marked(text) : sanitizeHtml(text)
-            )}
-            </div>
+    </head>
+    <body style="margin:0; padding:0">
+    <div class="overlay"></div>
+    <div class="header">
+        <div class="logo">
+            <img class="vg"
+                src="https://vietgame.asia/wp-content/themes/deploy/public/images/vietgame-short.png?id=e5ecd15da2b22678c1bc" />
         </div>
-    </body>
+    </div>
+    <img class="featured"
+        src="${image}" />
+    <div class="text">
+        <span class="cate">${category}</span>
+        <h2>${text}</h2>
+        ${getSubText(subText)}
+        <div class="container">
+            <div class="summary">
+                <p>
+                    ${marked(summary)}
+                </p>
+            </div>
+            ${getScore(score)}
+        </div>
+    </div>
+</body>
 </html>`;
 }
 
-function getImage(src: string, width ='auto', height = '225') {
-    return `<img
-        class="logo"
-        alt="Generated Image"
-        src="${sanitizeHtml(src)}"
-        width="${sanitizeHtml(width)}"
-        height="${sanitizeHtml(height)}"
-    />`
+function getScore(score: string) {
+    if (score !== '') {
+        return `
+        <div class="score">
+            <span class="score_number">${score}</span>
+        </div>
+        `;
+    } else return '';
 }
 
-function getPlusSign(i: number) {
-    return i === 0 ? '' : '<div class="plus">+</div>';
+function getSubText(text: string) {
+    if (text !== '') {
+        return `<h3>${text}</h3>`;
+    } else return '';
 }

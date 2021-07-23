@@ -1,4 +1,4 @@
-import { ParsedRequest, Theme, FileType } from '../api/_lib/types';
+import { ParsedRequest, FileType } from '../api/_lib/types';
 const { H, R, copee } = (window as any);
 let timeout = -1;
 
@@ -38,11 +38,10 @@ interface DropdownProps {
 
 const Dropdown = ({ options, value, onchange, small }: DropdownProps) => {
     const wrapper = small ? 'select-wrapper small' : 'select-wrapper';
-    const arrow = small ? 'select-arrow small' : 'select-arrow';
     return H('div',
         { className: wrapper },
         H('select',
-            { onchange: (e: any) => onchange(e.target.value) },
+            { className: 'border p-2 rounded', onchange: (e: any) => onchange(e.target.value) },
             options.map(o =>
                 H('option',
                     { value: o.value, selected: value === o.value },
@@ -50,10 +49,6 @@ const Dropdown = ({ options, value, onchange, small }: DropdownProps) => {
                 )
             )
         ),
-        H('div',
-            { className: arrow },
-            '▼'
-        )
     );
 }
 
@@ -68,19 +63,46 @@ const TextInput = ({ value, oninput }: TextInputProps) => {
         H('div',
             { className: 'input-inner-wrapper' },
             H('input',
-                { type: 'text', value, oninput: (e: any) => oninput(e.target.value) }
+                { className: 'border p-2 rounded', type: 'text', value, oninput: (e: any) => oninput(e.target.value) }
             )
         )
     );
 }
 
-interface ButtonProps {
-    label: string;
-    onclick: () => void;
+const TextAreaInput = ({ value, oninput }: TextInputProps) => {
+    return H('div',
+        { className: '' },
+        H('div',
+            { className: '' },
+            H('textarea',
+                { className: 'border p-2 rounded', value, oninput: (e: any) => oninput(e.target.value) }
+            )
+        )
+    );
 }
 
-const Button = ({ label, onclick }: ButtonProps) => {
-    return H('button', { onclick }, label);
+const NumberInput = ({ value, oninput }: TextInputProps) => {
+    return H('div',
+        { className: 'input-outer-wrapper' },
+        H('div',
+            { className: 'input-inner-wrapper' },
+            H('input',
+                { className: 'border p-2 rounded', type: 'number', value, oninput: (e: any) => oninput(e.target.value) }
+            )
+        )
+    );
+}
+
+const URLInput = ({ value, oninput }: TextInputProps) => {
+    return H('div',
+        { className: 'input-outer-wrapper' },
+        H('div',
+            { className: 'input-inner-wrapper' },
+            H('input',
+                { className: 'border p-2 rounded', type: 'url', value, oninput: (e: any) => oninput(e.target.value) }
+            )
+        )
+    );
 }
 
 interface FieldProps {
@@ -90,7 +112,7 @@ interface FieldProps {
 
 const Field = ({ label, input }: FieldProps) => {
     return H('div',
-        { className: 'field' },
+        { className: 'mb-4' },
         H('label', 
             H('div', {className: 'field-label'}, label),
             H('div', { className: 'field-value' }, input),
@@ -120,60 +142,9 @@ const Toast = ({ show, message }: ToastProps) => {
     );
 }
 
-const themeOptions: DropdownOption[] = [
-    { text: 'Light', value: 'light' },
-    { text: 'Dark', value: 'dark' },
-];
-
 const fileTypeOptions: DropdownOption[] = [
     { text: 'PNG', value: 'png' },
     { text: 'JPEG', value: 'jpeg' },
-];
-
-const fontSizeOptions: DropdownOption[] = Array
-    .from({ length: 10 })
-    .map((_, i) => i * 25)
-    .filter(n => n > 0)
-    .map(n => ({ text: n + 'px', value: n + 'px' }));
-
-const markdownOptions: DropdownOption[] = [
-    { text: 'Plain Text', value: '0' },
-    { text: 'Markdown', value: '1' },
-];
-
-const imageLightOptions: DropdownOption[] = [
-    { text: 'Vercel', value: 'https://assets.vercel.com/image/upload/front/assets/design/vercel-triangle-black.svg' },
-    { text: 'Next.js', value: 'https://assets.vercel.com/image/upload/front/assets/design/nextjs-black-logo.svg' },
-    { text: 'Hyper', value: 'https://assets.vercel.com/image/upload/front/assets/design/hyper-color-logo.svg' },
-];
-
-const imageDarkOptions: DropdownOption[] = [
-
-    { text: 'Vercel', value: 'https://assets.vercel.com/image/upload/front/assets/design/vercel-triangle-white.svg' },
-    { text: 'Next.js', value: 'https://assets.vercel.com/image/upload/front/assets/design/nextjs-white-logo.svg' },
-    { text: 'Hyper', value: 'https://assets.vercel.com/image/upload/front/assets/design/hyper-bw-logo.svg' },
-];
-
-const widthOptions = [
-    { text: 'width', value: 'auto' },
-    { text: '50', value: '50' },
-    { text: '100', value: '100' },
-    { text: '150', value: '150' },
-    { text: '200', value: '200' },
-    { text: '250', value: '250' },
-    { text: '300', value: '300' },
-    { text: '350', value: '350' },
-];
-
-const heightOptions = [
-    { text: 'height', value: 'auto' },
-    { text: '50', value: '50' },
-    { text: '100', value: '100' },
-    { text: '150', value: '150' },
-    { text: '200', value: '200' },
-    { text: '250', value: '250' },
-    { text: '300', value: '300' },
-    { text: '350', value: '350' },
 ];
 
 interface AppState extends ParsedRequest {
@@ -202,56 +173,32 @@ const App = (_: any, state: AppState, setState: SetState) => {
     };
     const {
         fileType = 'png',
-        fontSize = '100px',
-        theme = 'light',
-        md = true,
-        text = '**Hello** World',
-        images=[imageLightOptions[0].value],
-        widths=[],
-        heights=[],
+        text = 'Đây là tít chính',
+        subText = '',
+        category = '',
+        summary = '',
+        score = '',
+        image='https://d9n64ieh9hz8y.cloudfront.net/wp-content/uploads/20210723075128/dead-space-don-nhan-phien-ban-lam-lai-tin-game.jpg',
         showToast = false,
         messageToast = '',
         loading = true,
-        selectedImageIndex = 0,
         overrideUrl = null,
     } = state;
-    const mdValue = md ? '1' : '0';
-    const imageOptions = theme === 'light' ? imageLightOptions : imageDarkOptions;
     const url = new URL(window.location.origin);
     url.pathname = `${encodeURIComponent(text)}.${fileType}`;
-    url.searchParams.append('theme', theme);
-    url.searchParams.append('md', mdValue);
-    url.searchParams.append('fontSize', fontSize);
-    for (let image of images) {
-        url.searchParams.append('images', image);
-    }
-    for (let width of widths) {
-        url.searchParams.append('widths', width);
-    }
-    for (let height of heights) {
-        url.searchParams.append('heights', height);
-    }
+    url.searchParams.append('subtext', subText);
+    url.searchParams.append('category', category);
+    url.searchParams.append('summary', summary);
+    url.searchParams.append('score', score);
+    url.searchParams.append('image', image);
 
     return H('div',
-        { className: 'split' },
+        { className: 'flex space-x-8' },
         H('div',
             { className: 'pull-left' },
             H('div',
                 H(Field, {
-                    label: 'Theme',
-                    input: H(Dropdown, {
-                        options: themeOptions,
-                        value: theme,
-                        onchange: (val: Theme) => {
-                            const options = val === 'light' ? imageLightOptions : imageDarkOptions
-                            let clone = [...images];
-                            clone[0] = options[selectedImageIndex].value;
-                            setLoadingState({ theme: val, images: clone });
-                        }
-                    })
-                }),
-                H(Field, {
-                    label: 'File Type',
+                    label: 'Định dạng ảnh',
                     input: H(Dropdown, {
                         options: fileTypeOptions,
                         value: fileType,
@@ -259,24 +206,8 @@ const App = (_: any, state: AppState, setState: SetState) => {
                     })
                 }),
                 H(Field, {
-                    label: 'Font Size',
-                    input: H(Dropdown, {
-                        options: fontSizeOptions,
-                        value: fontSize,
-                        onchange: (val: string) => setLoadingState({ fontSize: val })
-                    })
-                }),
-                H(Field, {
-                    label: 'Text Type',
-                    input: H(Dropdown, {
-                        options: markdownOptions,
-                        value: mdValue,
-                        onchange: (val: string) => setLoadingState({ md: val === '1' })
-                    })
-                }),
-                H(Field, {
-                    label: 'Text Input',
-                    input: H(TextInput, {
+                    label: 'Tiêu đề',
+                    input: H(TextAreaInput, {
                         value: text,
                         oninput: (val: string) => {
                             console.log('oninput ' + val);
@@ -285,104 +216,54 @@ const App = (_: any, state: AppState, setState: SetState) => {
                     })
                 }),
                 H(Field, {
-                    label: 'Image 1',
-                    input: H('div',
-                        H(Dropdown, {
-                            options: imageOptions,
-                            value: imageOptions[selectedImageIndex].value,
-                            onchange: (val: string) =>  {
-                                let clone = [...images];
-                                clone[0] = val;
-                                const selected = imageOptions.map(o => o.value).indexOf(val);
-                                setLoadingState({ images: clone, selectedImageIndex: selected });
-                            }
-                        }),
-                        H('div',
-                            { className: 'field-flex' },
-                            H(Dropdown, {
-                                options: widthOptions,
-                                value: widths[0],
-                                small: true,
-                                onchange: (val: string) =>  {
-                                    let clone = [...widths];
-                                    clone[0] = val;
-                                    setLoadingState({ widths: clone });
-                                }
-                            }),
-                            H(Dropdown, {
-                                options: heightOptions,
-                                value: heights[0],
-                                small: true,
-                                onchange: (val: string) =>  {
-                                    let clone = [...heights];
-                                    clone[0] = val;
-                                    setLoadingState({ heights: clone });
-                                }
-                            })
-                        )
-                    ),
-                }),
-                ...images.slice(1).map((image, i) => H(Field, {
-                    label: `Image ${i + 2}`,
-                    input: H('div',
-                        H(TextInput, {
-                            value: image,
-                            oninput: (val: string) => {
-                                let clone = [...images];
-                                clone[i + 1] = val;
-                                setLoadingState({ images: clone, overrideUrl: url });
-                            }
-                        }),
-                        H('div',
-                            { className: 'field-flex' },
-                            H(Dropdown, {
-                                options: widthOptions,
-                                value: widths[i + 1],
-                                small: true,
-                                onchange: (val: string) =>  {
-                                    let clone = [...widths];
-                                    clone[i + 1] = val;
-                                    setLoadingState({ widths: clone });
-                                }
-                            }),
-                            H(Dropdown, {
-                                options: heightOptions,
-                                value: heights[i + 1],
-                                small: true,
-                                onchange: (val: string) =>  {
-                                    let clone = [...heights];
-                                    clone[i + 1] = val;
-                                    setLoadingState({ heights: clone });
-                                }
-                            })
-                        ),
-                        H('div',
-                            { className: 'field-flex' },
-                            H(Button, {
-                                label: `Remove Image ${i + 2}`,
-                                onclick: (e: MouseEvent) => {
-                                    e.preventDefault();
-                                    const filter = (arr: any[]) => [...arr].filter((_, n) => n !== i + 1);
-                                    const imagesClone = filter(images);
-                                    const widthsClone = filter(widths);
-                                    const heightsClone = filter(heights);
-                                    setLoadingState({ images: imagesClone, widths: widthsClone, heights: heightsClone });
-                                }
-                            })
-                        )
-                    )
-                })),
-                H(Field, {
-                    label: `Image ${images.length + 1}`,
-                    input: H(Button, {
-                        label: `Add Image ${images.length + 1}`,
-                        onclick: () => {
-                            const nextImage = images.length === 1
-                                ? 'https://cdn.jsdelivr.net/gh/remojansen/logo.ts@master/ts.svg'
-                                : '';
-                            setLoadingState({ images: [...images, nextImage] })
+                    label: 'Tiêu đề phụ',
+                    input: H(TextInput, {
+                        value: subText,
+                        oninput: (val: string) => {
+                            console.log('oninput ' + val);
+                            setLoadingState({ subText: val, overrideUrl: url });
                         }
-                    }),
+                    })
+                }),
+                H(Field, {
+                    label: 'Danh mục',
+                    input: H(TextInput, {
+                        value: category,
+                        oninput: (val: string) => {
+                            console.log('oninput ' + val);
+                            setLoadingState({ category: val, overrideUrl: url });
+                        }
+                    })
+                }),
+                H(Field, {
+                    label: 'Đánh giá',
+                    input: H(TextAreaInput, {
+                        value: summary,
+                        oninput: (val: string) => {
+                            console.log('oninput ' + val);
+                            setLoadingState({ summary: val, overrideUrl: url });
+                        }
+                    })
+                }),
+                H(Field, {
+                    label: 'Điểm',
+                    input: H(NumberInput, {
+                        value: score,
+                        oninput: (val: string) => {
+                            console.log('oninput ' + val);
+                            setLoadingState({ score: val, overrideUrl: url });
+                        }
+                    })
+                }),
+                H(Field, {
+                    label: 'URL ảnh',
+                    input: H(URLInput, {
+                        value: image,
+                        oninput: (val: string) => {
+                            console.log('oninput ' + val);
+                            setLoadingState({ image: val, overrideUrl: url });
+                        }
+                    })
                 }),
             )
         ),
