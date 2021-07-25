@@ -162,6 +162,10 @@ export function getHtml(parsedReq: ParsedRequest) {
         line-height: 1.5;
         margin: unset;
     }
+
+    .cate {
+        text-transform: uppercase;
+    }
     </style>
     </head>
     <body style="margin:0; padding:0">
