@@ -106,6 +106,8 @@ export function getHtml(parsedReq: ParsedRequest) {
         color: white;
         font-size: 0.8rem;
         letter-spacing: 0.25rem;
+        text-transform: uppercase;
+        font-weight: 700;
     }
 
     .vg {
@@ -161,10 +163,6 @@ export function getHtml(parsedReq: ParsedRequest) {
     .summary p {
         line-height: 1.5;
         margin: unset;
-    }
-
-    .cate {
-        text-transform: uppercase;
     }
     </style>
     </head>
