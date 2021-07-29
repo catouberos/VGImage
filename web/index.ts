@@ -67,7 +67,7 @@ const TextAreaInput = ({ value, oninput }: TextInputProps) => {
 
 const NumberInput = ({ value, oninput }: TextInputProps) => {
     return H('input',
-        { className: 'uk-input', type: 'number', value, oninput: (e: any) => oninput(e.target.value) }
+        { className: 'uk-input', type: 'number', pattern: '[0-9]*', inputmode: 'numeric', value, oninput: (e: any) => oninput(e.target.value) }
     );
 }
 
