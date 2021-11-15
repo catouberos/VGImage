@@ -109,6 +109,13 @@ const fileTypeOptions: DropdownOption[] = [
     { text: 'JPEG', value: 'jpeg' },
 ];
 
+const bgColorTypeOptions: DropdownOption[] = [
+    { text: 'Blue', value: '2563EB' },
+    { text: 'Green', value: '3F992F' },
+    { text: 'Orange', value: 'FF8500' },
+    { text: 'Red', value: 'DC2626' },
+];
+
 interface AppState extends ParsedRequest {
     loading: boolean;
     showToast: boolean;
@@ -140,6 +147,7 @@ const App = (_: any, state: AppState, setState: SetState) => {
         category = 'Tin Game',
         summary = '',
         score = '',
+        bgColor = '2563EB',
         image = 'https://d9n64ieh9hz8y.cloudfront.net/wp-content/uploads/20210723075128/dead-space-don-nhan-phien-ban-lam-lai-tin-game.jpg',
         showToast = false,
         messageToast = '',
@@ -152,6 +160,7 @@ const App = (_: any, state: AppState, setState: SetState) => {
     url.searchParams.append('category', category);
     url.searchParams.append('summary', summary);
     url.searchParams.append('score', score);
+    url.searchParams.append('bgColor', bgColor);
     url.searchParams.append('image', image);
 
     return H('div',
@@ -170,6 +179,14 @@ const App = (_: any, state: AppState, setState: SetState) => {
                             options: fileTypeOptions,
                             value: fileType,
                             onchange: (val: FileType) => setLoadingState({ fileType: val })
+                        })
+                    }),
+                    H(Field, {
+                        label: 'Color',
+                        input: H(Dropdown, {
+                            options: bgColorTypeOptions,
+                            value: bgColor,
+                            onchange: (val: string) => setLoadingState({ bgColor: val })
                         })
                     }),
                     H(Field, {

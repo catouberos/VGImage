@@ -5,7 +5,7 @@ import { ParsedRequest } from './types';
 export function parseRequest(req: IncomingMessage) {
     console.log('HTTP ' + req.url);
     const { pathname, query } = parse(req.url || '/', true);
-    const { subtext, category, summary, score, image } = (query || {});
+    const { subtext, category, summary, score, bgColor, image } = (query || {});
 
     if (Array.isArray(subtext)) {
         throw new Error('Expected a single summary');
@@ -17,6 +17,9 @@ export function parseRequest(req: IncomingMessage) {
         throw new Error('Expected a single summary');
     }
     if (Array.isArray(score)) {
+        throw new Error('Expected a single summary');
+    }
+    if (Array.isArray(bgColor)) {
         throw new Error('Expected a single summary');
     }
     if (Array.isArray(image)) {
@@ -42,6 +45,7 @@ export function parseRequest(req: IncomingMessage) {
         category: category || '',
         summary: summary || '',
         score: score || '',
+        bgColor: bgColor || '',
         image: image || '',
     };
     return parsedRequest;

@@ -8,7 +8,7 @@ const barlow = readFileSync(`${__dirname}/../_fonts/Barlow-Bold.woff2`).toString
 const barlowbold = readFileSync(`${__dirname}/../_fonts/Barlow-Black.woff2`).toString('base64');
 
 export function getHtml(parsedReq: ParsedRequest) {
-    const { text, subText, category, summary, score, image } = parsedReq;
+    const { text, subText, category, summary, score, bgColor, image } = parsedReq;
     return `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -48,7 +48,7 @@ export function getHtml(parsedReq: ParsedRequest) {
         display: flex;
         align-items: center;
         justify-content: center;
-        background:rgb(37, 99, 235);
+        background: #${bgColor};
         height: 100vh;
         width: 100vw;
     }

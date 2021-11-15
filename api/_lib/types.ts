@@ -8,5 +8,6 @@ export interface ParsedRequest {
     category: string;
     summary: string;
     score: string;
+    bgColor: string;
     image: string;
 }
