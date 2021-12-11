@@ -55,8 +55,8 @@ export function getHtml(parsedReq: ParsedRequest) {
 
     body {
         position: relative;
-        width: 1000px;
-        height: 1000px;
+        width: 960px;
+        height: 960px;
     }
 
     .overlay {
